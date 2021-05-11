@@ -1,0 +1,91 @@
+---
+title: "Transboundary Script May 3 2021"
+author: "Julia Lawson, UCSB"
+date: "5/3/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(grid)
+library(gridExtra)
+library(tidyverse)
+library(here)
+
+#Loading RAM Database
+load(here("data", "DBdata[mdl][v4.491].RData"))
+
+ram.ts <- timeseries_values_views %>%
+  tbl_df() %>%
+  select(stockid, stocklong, year, TCbest, TBbest, BdivBmsypref, UdivUmsypref) %>% 
+  left_join(tbl_df(stock),by = c("stockid", "stocklong")) %>%
+  left_join(tbl_df(area), by = "areaid") %>%
+  select(-inmyersdb, -myersstockid, -alternateareaname) %>% 
+  rename (status_bio = BdivBmsypref) %>% 
+  rename (status_f = UdivUmsypref) %>% 
+  select(stockid, stocklong, year, TCbest, TBbest, status_f, status_bio, scientificname, commonname, areaid, region, primary_country, primary_FAOarea)
+
+
+#Loading Chris Free database, which includes: intrinsic growth rate 'r', carrying capacity 'B0', shape parameter 'p'
+free <- read.csv(here("data", "RAM_sp_model_fits.csv")) %>% 
+  select(stockid, r, p, B0)
+
+#Load Liu and Molina database to identify two patch stocks
+#proportional ownership of fish stocks by EEZs
+all_sp_prop_eezs <- readRDS(here("data", "all_sp_prop_eezs.rds"))
+subset <- all_sp_prop_eezs %>% 
+  group_by(stockid) %>% 
+  tally()
+subset_two <- subset %>% 
+  filter(n == 2) %>% 
+  select(stockid)
+#Now, join only by stocks with two eezs
+subset_two2 <- left_join(subset_two, all_sp_prop_eezs, by = "stockid") %>% 
+  mutate(prop_cells = (n_cells/total_cells)) %>%
+  select(stockid, ohi_rgn, rgn_nam, prop_cells) 
+
+#Load Ramesh transport data
+ramesh <- read.csv(here("data", "edgecontribs-cl.csv")) %>% 
+  rename("scientificname"="species") %>% 
+  na.omit() %>% 
+  filter(portion != 0.000000e+00)
+
+species <- ramesh %>% 
+  filter(scientificname == "Lophius americanus")
+
+hist(species$portion)
+min(species$portion)
+max(species$portion)
+mean(species$portion)
+#"Acanthocybium solandri", Wahoo #max: 0.01292114; Mean: 0.0001397711
+#"Acanthopagrus bifasciatus", Seabream #max: 0.05473083; Mean: 0.01826874
+#"Thunnus obesus", Bigeye tuna #max: 0.002420675; Mean: 2.661015e-05
+#"Lophius americanus", Anglerfish max: 3.318711e-05 
+
+```
+
+## Components of Revised Kaffine and Costello Model
+
+```{r stock charactaristics}
+#Harvestable Adult stock (TBbest in mt) - Ram database
+#Harvest (TCbest in mt) - Ram databse
+#Intrinsic growth rate (r) - Free database
+#Carrying capacity (K) - Free database
+#Surviving stock of young (s) - Free *in progress*
+#Fraction of surviving adults, spawning stock (theta) - Free *in progress*
+#Adult dispersal - regression based on Green et al. 
+#Larval dispersal - Ramesh et al. paper
+
+ram.combo <- ram.ts %>% 
+  select(stockid, stocklong, year, TCbest, TBbest, scientificname, commonname) %>% 
+  left_join(free, by="stockid") %>% 
+  left_join(subset_two2, by="stockid") %>% 
+  na.omit()
+
+unique(ram.combo$stockid) #133 two-country stocks
+hist(ram.combo$B0) #data skewed to lower r (Sablefish, Redfish) and lower K (but anchovies probably skew)
+
+#trying out adding Ramesh data to ram.
+
+```

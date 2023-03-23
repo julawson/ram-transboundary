@@ -1,0 +1,22 @@
+```{r setup, include=FALSE}
+
+library(grid)
+library(gridExtra)
+library(tidyverse)
+library(here)
+library(rfishbase)
+
+#Loading RAM Legacy Database
+load(here("data", "DBdata[mdl][v4.491].RData"))
+
+#Loading Liu and Molina Database
+all_sp_prop_eezs <- readRDS(here("data", "all_sp_prop_eezs.rds"))
+
+#Loading Ramesh Database
+ramesh <- read.csv(here("data", "edgecontribs-cl.csv")) 
+
+#Loading Chris Free database, which includes: intrinsic growth rate 'r', carrying capacity 'B0', shape parameter 'p'
+free <- read.csv(here("data", "RAM_sp_model_fits.csv")) %>% 
+  select(stockid, r, p, B0)
+
+```

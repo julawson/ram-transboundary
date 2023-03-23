@@ -1,17 +1,329 @@
----
-title: "Transboundary Script May 3 2021"
-author: "Julia Lawson, UCSB"
-date: "5/3/2021"
-output: html_document
----
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 
 library(grid)
 library(gridExtra)
 library(tidyverse)
 library(here)
+library(rfishbase)
+
+load(here("data", "DBdata[mdl][v4.491].RData"))
+
+all_sp_prop_eezs <- readRDS(here("data", "all_sp_prop_eezs.rds"))
+```
+
+```{r theory}
+
+## logistic growth function with harvesting
+  
+grow <- function(x, r, K, fmsy) {
+  
+  res <- (r * x * (1 - (x / K))) - (x * fmsy)
+  
+  res <- pmax(res, 0)
+  return(res)
+}
+
+
+# Define the parameter values
+x <- seq(0, 200000, length.out = 100)  # initial population size
+r <- 0.56  # intrinsic growth rate
+K <- 200000  # carrying capacity
+fmsy <- 0.16  # target harvest rate
+
+# Calculate the net population growth rate for each value of x
+res <- sapply(x, function(x) grow(x, r, K, fmsy))
+
+# Create a data frame with the results
+df <- data.frame(x = x, res = res)
+
+# Create a plot of the net population growth rate as a function of x
+ggplot(df, aes(x = x, y = res)) +
+  geom_line() +
+  scale_y_continuous(limits = c(0, max(df$res) * 1.1)) +
+  labs(x = "Initial population size", y = "Net population growth rate")
+
+
+
+
+# simple model of logistic growth
+dNt <- function(r, N, K) r * N * ((K - N)/K)
+
+# iterate growth through time
+Nt <- function(r, N, K, t) {
+  for (i in 1:(t - 1)) {
+    N[i + 1] <- N[i] + dNt(r, N[i], K)
+# make sure population does not exceed carrying capacity
+    N[i + 1] <- min(N[i + 1], K)
+    }
+  N
+}
+
+t <- 100
+r <- 0.16
+K <- 100000
+
+# lets consider 4 different starting abundances (i.e., N(t=0) values)
+Nt0 = c(1000, 1500, 2000, 2500)
+
+#par(mfrow=c(2,2))
+
+for (i in seq_along(Nt0)) {
+  plot(1:t, Nt(r, Nt0[i], K, t),
+    main = paste('N(t=0) =', Nt0[i]), ylim =c(0, K))
+  abline(h = K, lty = 2, col='red')
+}
+
+```
+
+```{r rfishbase}
+
+## Aspect Ratio as a proxy for Adult Movement ##
+
+all_species <- all_sp_prop_eezs %>% left_join(metadata, by=c("stockid")) %>% 
+  select(stockid, stocklong, scientificname, commonname, total_cells, ohi_rgn, n_cells, prop, rgn_nam)
+
+forfb <- all_species %>% 
+  distinct(scientificname) %>% drop_na()
+
+specieslist <- forfb[['scientificname']]
+
+all_species_genera <- all_sp_prop_eezs %>% left_join(metadata, by=c("stockid")) %>% 
+  select(stockid, stocklong, scientificname, commonname, total_cells, ohi_rgn, n_cells, prop, rgn_nam) %>% 
+  separate(scientificname, c("Genus", "Species")) %>% 
+  select(-Species)
+
+fbswim <- swimming(species_list = specieslist) %>% drop_na(AspectRatio) %>% 
+  select(Species, AspectRatio) %>% 
+  rename(scientificname=Species) %>% 
+  separate(scientificname, c("Genus", "Species")) %>% 
+  left_join(all_species_genera, by=c("Genus")) %>% 
+  drop_na(AspectRatio) %>% 
+  distinct(stockid,AspectRatio) %>% 
+  group_by(stockid) %>% 
+  mutate(mean_AR=mean(AspectRatio)) %>% 
+  select(-AspectRatio) %>% 
+  distinct() %>% 
+  rename(AspectRatio=mean_AR)
+
+### At this point we have AspectRatio by Genus, a proxy for movement. 271 stocks.
+
+stock_ar <- fbswim %>%  
+  left_join(timeseries_values_views, by=c("stockid")) %>% 
+  select(stockid, year, BdivBmsypref, UdivUmsypref, AspectRatio) %>%
+  drop_na(UdivUmsypref,BdivBmsypref,AspectRatio) %>%
+  group_by(stockid) %>% 
+  mutate(max_year = max(year)) %>% 
+  ungroup() %>% 
+  mutate(maxsel = case_when(year == max_year ~ 1)) %>% 
+  filter(maxsel==1) %>% 
+  distinct()
+
+### Now we have AspectRatio as a proxy for movement for 285 stocks.
+  
+ggplot(stock_ar, aes(x=AspectRatio, y=UdivUmsypref)) +
+  geom_boxplot(aes(group=AspectRatio)) +
+  geom_smooth(method = "lm")
+
+lm_fit <- lm(UdivUmsypref ~ AspectRatio, data=stock_ar)
+summary(lm_fit)
+
+# No relationship between stock health and Aspect Ratio
+  
+```
+
+```{r sharedness}
+
+subset_all <- all_sp_prop_eezs %>% 
+  group_by(stockid) %>% 
+  tally() %>% 
+  rename(n_eez=n) %>% 
+  left_join(stock_ar, by=c("stockid")) %>% drop_na()
+
+#Lose a lot of stocks by joining by AspectRatio (down to 56 stocks)
+
+fullstocks <- subset_all %>% 
+  filter(n_eez>5) 
+
+ggplot(fullstocks, aes(x=n_eez, y=UdivUmsypref, color=AspectRatio)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+lm_fit <- lm(UdivUmsypref ~ n_eez + AspectRatio, data=fullstocks)
+summary(lm_fit)
+
+#Relationship between fishing mortality and number of EEZs (high aspect ratio, fewer EEZ stocks have higher fishing mortality) (when 5% cut off)
+#Not significant 
+
+```
+
+```{r stock growth}
+
+#Hypothesis Two. Faster growing stocks need less protection
+#Don't need to maintain to two EEZs anymore
+
+#Loading Chris Free database, which includes: intrinsic growth rate 'r', carrying capacity 'B0', shape parameter 'p'
+free <- read.csv(here("data", "RAM_sp_model_fits.csv")) %>% 
+  select(stockid, r, p, B0)
+
+subset_growth <- subset_all %>% select(stockid, n_eez)
+
+#Match to Ram Legacy stocks.
+eez_free <- left_join(stock_ar, free, by="stockid") %>% 
+  left_join(subset_growth) %>% 
+  distinct() %>% 
+  drop_na() %>% 
+  filter(n_eez>5)
+
+ggplot(eez_free, aes(x=n_eez, y=UdivUmsypref, color=r, size=B0)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+lm_fit <- glm(UdivUmsypref ~ n_eez + AspectRatio + r + B0, data=eez_free)
+summary(lm_fit)
+
+##Add in ex-vessel price?
+##Maria JJ paper on life history and tunas?
+
+```
+
+
+```{r two eez percent}
+
+## Hypothesis 1. Stocks that are more equally shared are in better health ###
+
+### Step 1. Identify stocks found within two EEZs only ###
+
+#Load Liu and Molina database to identify two patch stocks
+#proportional ownership of fish stocks by EEZs
+all_sp_prop_eezs <- readRDS(here("data", "all_sp_prop_eezs.rds"))
+subset <- all_sp_prop_eezs %>% 
+  group_by(stockid) %>% 
+  tally()
+subset_two <- subset %>% 
+  filter(n == 2) %>% 
+  select(stockid)
+
+#Now, join only by stocks with two eezs
+subset_two2 <- left_join(subset_two, subset_all, by = "stockid") %>% 
+  left_join(all_sp_prop_eezs) %>% 
+  mutate(perc_cells = (n_cells/total_cells)*100) %>%
+  mutate(perc_cells = round(perc_cells,digits=4)) %>% 
+  drop_na() %>% 
+  select(stockid, ohi_rgn, rgn_nam, perc_cells, AspectRatio) 
+
+### Adding in current stock health indicators (most recent) ###
+ram.ts <- timeseries_values_views %>%
+  tbl_df() %>%
+  drop_na(UdivUmsypref,BdivBmsypref) %>% 
+  select(stockid, year, BdivBmsypref, UdivUmsypref) %>% 
+  full_join(subset_two2) %>%
+  group_by(stockid) %>% 
+  drop_na() %>% 
+  mutate(max_year = max(year)) %>% 
+  ungroup() %>% 
+  mutate(maxsel = case_when(year == max_year ~ 1)) %>% 
+  filter(maxsel==1) %>% 
+  mutate(country_name = case_when(perc_cells >= 50.000 ~ 1,
+                                  perc_cells <= 50.000 ~ 0)) %>% 
+  filter(country_name==0) %>% 
+  filter(perc_cells>=1) 
+  #filter(stockid != "SCMPMB" & stockid != "RMULLMEDGSA5" & stockid != "ANGLMEDGSA5") %>%  #Removing outliers from fishing effort
+  #filter(stockid != "BRNSHRIMPGM")  #Removing outlier from Biomass 
+
+
+ggplot(ram.ts, aes(x=perc_cells, y=BdivBmsypref, color=AspectRatio)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+lm_fit <- lm(BdivBmsypref ~ perc_cells + AspectRatio, data=ram.ts)
+summary(lm_fit)
+
+# More shared stocks have lower fishing mortality, Aspect ratio doesn't seem to have an effect.
+# More shared stocks have higher biomass, Aspect Ratio is significant.
+# Very small sample size (n=23)
+
+```
+
+
+```{r protections}
+
+edf_data <- read.csv(here("data","edf_cs_ram_panel.csv")) %>% 
+  select(stockid, year, IQ, ITQ, IVQ, Coop, CommunityQuota, TURF) %>% 
+  group_by(stockid) %>% 
+  mutate(max_year = max(year)) %>% 
+  ungroup() %>% 
+  mutate(maxsel = case_when(year == max_year ~ 1)) %>% 
+  filter(maxsel==1) %>% 
+  select(stockid, IQ, ITQ, IVQ, Coop, CommunityQuota, TURF) %>% 
+  mutate(mgmt = case_when(IQ==1 | ITQ==1 | IVQ==1 | Coop==1 | CommunityQuota==1 | TURF==1 ~ 1)) %>% 
+  drop_na(mgmt) %>% 
+  select(stockid, mgmt)
+
+edf_mgmt <-left_join(subset_two, edf_data , by = "stockid") %>% 
+  mutate(mgmt = case_when(IQ==1 | ITQ==1 | IVQ==1 | Coop==1 | CommunityQuota==1 | TURF==1 ~ 1)) %>% 
+  select(stockid, mgmt)
+
+```
+
+```{r xxx}
+ram.ts_grouped <- ram.ts %>% 
+  mutate(group = case_when(perc_cells >= 0 & perc_cells < 10.000 ~ 10,
+                           perc_cells > 10.000 & perc_cells < 20.000 ~ 20,
+                           perc_cells > 20.000 & perc_cells < 30.000 ~ 30,
+                           perc_cells > 30.000 & perc_cells < 40.000 ~ 40,
+                           perc_cells > 40.000 & perc_cells < 50.000 ~ 50)) %>%
+  group_by(group) %>% 
+  summarize(mean_group=mean(UdivUmsypref), 
+            sd = sd(UdivUmsypref),
+            n = n(),
+            se = sd / sqrt(n)) %>% 
+  filter(group != 40)
+
+ggplot(ram.ts_grouped, aes(x=group, y=mean_group)) +
+  geom_point() +
+  geom_errorbar(aes(ymin=mean_group-se, ymax=mean_group+se), width=.2,
+                 position=position_dodge(.9))
+  
+#Getting full scientific names from RAM Database to match on
+scinames <- metadata %>% 
+  select(stockid, scientificname) 
+
+#Load Ramesh transport data
+ramesh <- read.csv(here("data", "edgecontribs-cl.csv")) %>% 
+  rename("scientificname"="species") %>%
+  na.omit() %>% 
+  filter(portion != 0.000000e+00) %>% 
+  group_by(source, scientificname) %>% 
+  add_tally() %>% 
+  rename(n_larval=n) %>% 
+  rename(primary_country=source) %>% 
+  left_join(metadata, by=c("scientificname","primary_country")) %>% 
+  drop_na() %>% 
+  select(stockid, n_larval, stocklong, scientificname, commonname, primary_country, sink)
+
+#Match Ramesh data to EEZ adult movement data.
+
+all_sp_prop_eezs <- readRDS(here("data", "all_sp_prop_eezs.rds"))
+subset <- all_sp_prop_eezs %>% 
+  group_by(stockid) %>% 
+  tally() %>% 
+  rename(n_eez=n) %>% 
+  left_join(ramesh) %>% 
+  drop_na()
+  
+
+
+hist(species$portion)
+min(species$portion)
+max(species$portion)
+mean(species$portion)
+#"Acanthocybium solandri", Wahoo #max: 0.01292114; Mean: 0.0001397711
+#"Acanthopagrus bifasciatus", Seabream #max: 0.05473083; Mean: 0.01826874
+#"Thunnus obesus", Bigeye tuna #max: 0.002420675; Mean: 2.661015e-05
+#"Lophius americanus", Anglerfish max: 3.318711e-05 
+
+### Step 2. Find matching time series from RAM database ###
 
 #Loading RAM Database
 load(here("data", "DBdata[mdl][v4.491].RData"))
@@ -26,42 +338,18 @@ ram.ts <- timeseries_values_views %>%
   rename (status_f = UdivUmsypref) %>% 
   select(stockid, stocklong, year, TCbest, TBbest, status_f, status_bio, scientificname, commonname, areaid, region, primary_country, primary_FAOarea)
 
+ram_twoeezs <- left_join(subset_two, ram.ts, by=c("stockid"))
 
-#Loading Chris Free database, which includes: intrinsic growth rate 'r', carrying capacity 'B0', shape parameter 'p'
-free <- read.csv(here("data", "RAM_sp_model_fits.csv")) %>% 
-  select(stockid, r, p, B0)
+```
 
-#Load Liu and Molina database to identify two patch stocks
-#proportional ownership of fish stocks by EEZs
-all_sp_prop_eezs <- readRDS(here("data", "all_sp_prop_eezs.rds"))
-subset <- all_sp_prop_eezs %>% 
-  group_by(stockid) %>% 
-  tally()
-subset_two <- subset %>% 
-  filter(n == 2) %>% 
-  select(stockid)
-#Now, join only by stocks with two eezs
-subset_two2 <- left_join(subset_two, all_sp_prop_eezs, by = "stockid") %>% 
-  mutate(prop_cells = (n_cells/total_cells)) %>%
-  select(stockid, ohi_rgn, rgn_nam, prop_cells) 
+```{r agreement database}
+treaties <- read.csv(here("data", "db_treaties.csv")) %>% 
+  filter(grepl('fish', Specific.words.used.to.code.agreement.as.E..environmental.)) %>% 
+  filter(Multilateral...Bilateral...Other...New=="Bilateral (2 and only 2 governments)" | Multilateral...Bilateral...Other...New=="European Union and 1 other country") %>% 
+  filter(Agreement.Type..level.2.=="Agreement") %>% 
+  filter(Signature.Year>1980)
 
-#Load Ramesh transport data
-ramesh <- read.csv(here("data", "edgecontribs-cl.csv")) %>% 
-  rename("scientificname"="species") %>% 
-  na.omit() %>% 
-  filter(portion != 0.000000e+00)
 
-species <- ramesh %>% 
-  filter(scientificname == "Lophius americanus")
-
-hist(species$portion)
-min(species$portion)
-max(species$portion)
-mean(species$portion)
-#"Acanthocybium solandri", Wahoo #max: 0.01292114; Mean: 0.0001397711
-#"Acanthopagrus bifasciatus", Seabream #max: 0.05473083; Mean: 0.01826874
-#"Thunnus obesus", Bigeye tuna #max: 0.002420675; Mean: 2.661015e-05
-#"Lophius americanus", Anglerfish max: 3.318711e-05 
 
 ```
 

@@ -1,3 +1,5 @@
+## Transboundary Larval Movement ##
+
 ```{r setup, include=FALSE}
 
 library(grid)
@@ -7,7 +9,19 @@ library(here)
 library(rfishbase)
 
 #Loading RAM Legacy Database
-load(here("data", "DBdata[mdl][v4.491].RData"))
+load(here("data", "DBdata[asmt][v4.496].RData"))
+
+ram <- timeseries_values_views %>% 
+  drop_na(BdivBmsypref, UdivUmsypref) %>%
+  select(stockid, year, BdivBmsypref, UdivUmsypref) %>%
+  filter(year>=1990)
+  #group_by(stockid) %>%
+  #mutate(max_year = max(year)) %>% 
+  #ungroup() %>% 
+  #mutate(maxsel = case_when(year == max_year ~ 1)) %>% 
+  #filter(maxsel==1) %>% 
+  #select(-maxsel, -max_year)
+  
 
 #Loading Liu and Molina Database
 all_sp_prop_eezs <- readRDS(here("data", "all_sp_prop_eezs.rds"))
@@ -18,5 +32,218 @@ ramesh <- read.csv(here("data", "edgecontribs-cl.csv"))
 #Loading Chris Free database, which includes: intrinsic growth rate 'r', carrying capacity 'B0', shape parameter 'p'
 free <- read.csv(here("data", "RAM_sp_model_fits.csv")) %>% 
   select(stockid, r, p, B0)
+
+```
+
+
+
+
+```{r fishbase aspect ratio}
+
+## Aspect Ratio by Genera, then matched to RAM Stocks ##
+
+all_species <- all_sp_prop_eezs %>% left_join(metadata, by=c("stockid")) %>% 
+  select(stockid, stocklong, scientificname, commonname, total_cells, ohi_rgn, n_cells, prop, rgn_nam)
+
+forfb <- all_species %>% 
+  distinct(scientificname) %>% drop_na()
+
+specieslist <- forfb[['scientificname']]
+
+all_species_genera <- all_sp_prop_eezs %>% left_join(metadata, by=c("stockid")) %>% 
+  select(stockid, stocklong, scientificname, commonname, total_cells, ohi_rgn, n_cells, prop, rgn_nam) %>% 
+  separate(scientificname, c("Genus", "Species")) %>% 
+  select(-Species)
+
+fbswim <- swimming(species_list = specieslist) %>% drop_na(AspectRatio) %>% 
+  select(Species, AspectRatio) %>% 
+  rename(scientificname=Species) %>% 
+  separate(scientificname, c("Genus", "Species")) %>% 
+  left_join(all_species_genera, by=c("Genus")) %>% 
+  drop_na(AspectRatio) %>% 
+  distinct(stockid,AspectRatio) %>% 
+  group_by(stockid) %>% 
+  mutate(mean_AR=mean(AspectRatio)) %>% 
+  select(-AspectRatio) %>% 
+  distinct() %>% 
+  rename(AspectRatio=mean_AR)
+
+```
+
+```{r trial}
+
+ramesh_tally <- ramesh %>% 
+  group_by(source, species) %>% 
+  add_tally() %>% 
+  rename(source_tally=n) %>% 
+  ungroup() %>% 
+  group_by(sink, species) %>% 
+  add_tally() %>% 
+  rename(sink_tally=n) %>% 
+  rename(rgn_nam=source) %>%
+  rename(scientificname=species) %>%
+  ungroup() %>% 
+  select(-sink, -portion, -sink_tally) %>% 
+  distinct()
+  #mutate(match = str_match(source, sink))
+
+
+ramesh_trial <- all_species %>%
+  group_by(stockid) %>% 
+  add_tally() %>% 
+  rename(eez_n=n) %>%
+  ungroup() %>% 
+  left_join(ramesh_tally) %>% 
+  drop_na() %>% 
+  group_by(stockid) %>% 
+  mutate(mean_source_network=mean(source_tally)) %>% 
+  left_join(ram) %>% 
+  filter(BdivBmsypref<10) %>% 
+  mutate(ratio=eez_n/mean_source_network) 
+
+ggplot(data=ramesh_trial, aes(x=ratio, y=BdivBmsypref)) +
+  geom_point() +
+  stat_smooth(method = "lm",
+              formula = y ~ x,
+              geom = "smooth")
+
+mod <- lm(BdivBmsypref~ratio, data=ramesh_trial)
+summary(mod)
+
+```
+
+```{r cleaning ramesh}
+
+ramesh_clean <- ramesh %>%
+  filter(portion != 0.000000e+00) %>% 
+  group_by(source, species) %>% 
+  add_tally() %>% 
+  rename(n_larval=n) %>% 
+  rename(scientificname=species) %>% 
+  rename(rgn_nam=source) %>% 
+  mutate(rgn_nam = ifelse(rgn_nam == "Cura\xe7ao", "Curacao", rgn_nam)) %>% 
+  mutate(rgn_nam = ifelse(rgn_nam == "R\xe9union", "Reunion", rgn_nam)) %>% 
+  mutate(rgn_nam = ifelse(rgn_nam == "R\xe9union", "Reunion", rgn_nam)) %>%
+  mutate(rgn_nam = ifelse(rgn_nam == "Alaska", "United States", rgn_nam)) %>% 
+  mutate(sink = ifelse(sink == "Alaska", "United States", sink))
+
+```
+
+```{r test case walleye pollock}
+
+full_db_wep <- all_species %>%
+  group_by(stockid) %>% 
+  add_tally() %>% 
+  rename(eez_n=n) %>% 
+  filter(scientificname=="Theragra chalcogramma")
+
+ramesh_wep <- ramesh_clean %>% 
+  rename(source=rgn_nam) %>% 
+  filter(scientificname=="Theragra chalcogramma") %>% 
+  pivot_longer(cols=source:sink,
+               names_to="sor_sin") %>% 
+  unique() %>% 
+  rename(rgn_nam=value) %>% 
+  select(-sor_sin) %>% 
+  group_by(scientificname, rgn_nam) %>% 
+  mutate(mean_n_larval=mean(n_larval),
+         mean_portion=mean(portion)) %>% 
+  select(-n_larval, -portion) %>% 
+  unique()
+
+trial_link <- full_db_wep %>% 
+  left_join(ramesh_wep, by = c("scientificname", "rgn_nam")) %>% 
+  mutate(ratio=(eez_n/mean_n_larval)) %>% 
+  left_join(ram, by=c("stockid"))
+
+ggplot(data=trial_link, aes(x=mean_n_larval, y=UdivUmsypref)) +
+  geom_point() 
+
+```
+
+```{r ratio eezs}
+
+ramesh_summary <- ramesh_clean %>% 
+  rename(source=rgn_nam) %>%
+  pivot_longer(cols=source:sink,
+               names_to="sor_sin") %>% 
+  unique() %>% 
+  rename(rgn_nam=value) %>% 
+  select(-sor_sin) %>% 
+  group_by(scientificname, rgn_nam) %>% 
+  mutate(mean_n_larval=mean(n_larval),
+         mean_portion=mean(portion)) %>% 
+  select(-n_larval, -portion) %>% 
+  unique()
+
+ramesh_summary_sp <- ramesh_clean %>% 
+  rename(source=rgn_nam) %>%
+  pivot_longer(cols=source:sink,
+               names_to="sor_sin") %>% 
+  unique() %>% 
+  rename(rgn_nam=value) %>% 
+  select(-sor_sin) %>% 
+  group_by(scientificname) %>% 
+  mutate(mean_n_larval=mean(n_larval),
+         mean_portion=mean(portion)) %>% 
+  select(-n_larval, -portion, -rgn_nam) %>% 
+  unique()
+
+full_db_eez <- all_species %>%
+  group_by(stockid) %>% 
+  add_tally() %>% 
+  rename(eez_n=n) %>% 
+  left_join(ram) %>% 
+  drop_na() %>% 
+  left_join(ramesh_summary_sp) %>% 
+  drop_na() %>% 
+  mutate(ratio=mean_n_larval/eez_n)
+
+
+ggplot(data=full_db_eez, aes(x=ratio, y=BdivBmsypref)) +
+  geom_point() 
+```
+
+```{r combined database}
+
+full_db <- all_species %>%
+  group_by(stockid) %>% 
+  add_tally() %>% 
+  rename(eez_n=n) %>% 
+  left_join(fbswim) %>% 
+  left_join(free) %>% 
+  drop_na() %>% 
+  distinct(stockid, eez_n, AspectRatio) %>% 
+  filter(eez_n<40)
+
+ggplot(full_db, aes(x=AspectRatio, y=eez_n)) + 
+  geom_point() +
+  geom_smooth()
+
+#Identifying sole owner EEZs, with self-contained larval movement 
+
+full_db_sources <- full_db %>% 
+  left_join(ramesh_clean, by=c("rgn_nam", "scientificname")) %>% 
+  #filter(prop>0.99) %>% 
+  left_join(ram)  %>%
+  group_by(stockid) %>% 
+  drop_na(BdivBmsypref, UdivUmsypref) %>% 
+  mutate(max_year = max(year)) %>% 
+  ungroup() %>% 
+  mutate(maxsel = case_when(year == max_year ~ 1)) %>% 
+  filter(maxsel==1) %>% 
+  filter(eez_n==1) %>% 
+  filter(n_larval==1) %>% 
+  summarize(mean_f=mean(UdivUmsypref),
+            mean_b=mean(BdivBmsypref))
+
+#Creating a ratio of EEZ distribution to larval distribution
+
+full_db_ratio <- full_db %>% 
+  mutate(ratio = case_when(prop == 1 ~ 1,
+                         prop <1 & prop >= 0.95 ~ 2,
+                         prop <1 & prop >= 0.95 ~ 2,))
+
+
 
 ```

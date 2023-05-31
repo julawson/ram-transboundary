@@ -1,0 +1,297 @@
+region,stocklong,stockid,year_eez,year_fao,year_nat,policy_nat,primary_country
+high seas,Southern bluefin tuna Southern Oceans,SBT,NA,2000,1994,CCSBT,Japan
+high seas,Striped marlin Northeast Pacific,STMARLINNEPAC,NA,1995,1950,IATTC Convention Agreement,USA
+high seas,Yellowfin tuna Eastern Pacific,YFINEPAC,NA,1999,1950,IATTC Convention Agreement,Mexico
+high seas,Albacore tuna Northern Atlantic,ALBANATL,NA,1996,1969,ICCAT,Spain
+high seas,Albacore tuna South Atlantic,ALBASATL,NA,NA,1969,ICCAT,Taiwan
+high seas,Atlantic bluefin tuna Eastern Atlantic,ATBTUNAEATL,NA,1996,1969,ICCAT,Spain
+high seas,Atlantic bluefin tuna Western Atlantic,ATBTUNAWATL,NA,1995,1969,ICCAT,USA
+high seas,Bigeye tuna Atlantic Ocean,BIGEYEATL,NA,2000,1969,ICCAT,Japan
+high seas,Blue marlin Atlantic Ocean,BMARLINATL,NA,2000,1969,ICCAT,Japan
+high seas,Sailfish Eastern Atlantic,SAILEATL,NA,2003,1969,ICCAT,Ghana
+high seas,Sailfish Western Atlantic,SAILWATL,NA,NA,1969,ICCAT,Venezuela
+high seas,Skipjack tuna Western Atlantic,SKJWATL,NA,2000,1969,ICCAT,Brazil
+high seas,Swordfish Northern Atlantic,SWORDNATL,NA,1996,1969,ICCAT,Spain
+high seas,White marlin Atlantic Ocean,WMARLINATL,NA,NA,1969,ICCAT,Taiwan
+high seas,Yellowfin tuna Atlantic Ocean,YFINATL,NA,1996,1969,ICCAT,Spain
+high seas,Skipjack tuna Indian Ocean,SKJCIO,NA,2009,1996,IOTC,Indonesia
+high seas,Striped marlin Indian Ocean,STMARLINIO,NA,2009,1996,IOTC,Indonesia
+high seas,Yellowfin tuna Indian Ocean,YFINEIO,NA,1996,1996,IOTC,Spain
+high seas,Pacific bluefin tuna Pacific Ocean,PACBTUNA,NA,2000,2004,CCM HMS WCPO,Japan
+high seas,Striped marlin Western and Central North Pacific,STMARLINWCNPAC,NA,2000,2004,CCM HMS WCPO,Japan
+high seas,Bigeye tuna Central Western Pacific Ocean,BIGEYECWPAC,NA,2000,2004,CCM HMS WCPO,Japan
+high seas,Striped marlin Western Pacific Ocean,STMARLINSWPO,NA,2000,2004,CCM HMS WCPO,Japan
+Australia,Blue grenadier New South Wales to Western Australia,BGRDRNSWWA,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Deepwater flathead Southeast Australia,DEEPFLATHEADSE,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Common gemfish Southeast Australia,GEMFISHSE,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Jackass morwong Eastern half of Southeast Australia,MORWONGESE,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Jackass morwong Western half of Southeast Australia,MORWONGWSE,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Ling Southeast Australia,NZLINGESE,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Orange roughy Southeast Australia,OROUGHYSE,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Silverfish Southeast Australia,SILVERFISHSE,1979,1999,1991,Fisheries Management Act,Australia
+Australia,School whiting Southeast Australia,SWHITSE,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Tiger flathead Southeast Australia,TIGERFLATSE,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Blue warehou Eastern half of Southeast Australia,WAREHOUESE,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Blue warehou Western half of Southeast Australia,WAREHOUWSE,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Rock lobster South Australia Northern Zone,RROCKLOBSTERSAUSNZ,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Rock lobster South Australia Southern Zone,RROCKLOBSTERSAUSSZ,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Snapper Northern Spencer Gulf,SNAPSAUSNSG,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Snapper Southern Spencer Gulf,SNAPSAUSSSG,1979,1999,1991,Fisheries Management Act,Australia
+Australia,Snapper Northern Gulf St. Vincent,NA,1979,1999,1991,Fisheries Management Act,
+Australia,Patagonian toothfish Macquarie Island,PTOOTHFISHMI,1979,1999,1991,Fisheries Management Act,Australia
+New Zealand,Black cardinalfish East coast of North Island,BKCDLFENI,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Hoki Western New Zealand,HOKIWNZ,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,New Zealand snapper New Zealand SNA 1 Bay of Plenty and Hauraki Gulf,NZSNAPNZ1BOP-HAGU,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Orange roughy Northwest Chatham Rise,OROUGHYNWCR,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Orange roughy New Zealand Challenger Plateau,OROUGHYNZ7A,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Orange roughy New Zealand Mid East Coast,OROUGHYNZMEC,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Paua New Zealand Area PAU 7 (Marlborough),PAUAPAU7,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Smooth oreo East Pukaki Rise,SMOOTHOREOEPR,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Smooth oreo Southland,SMOOTHOREOSLD,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Black oreo West end of Chatham Rise,BLACKOREOWECR,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Bluenose New Zealand,BNSNZ,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,New Zealand snapper New Zealand SNA 7,NZSNAPNZ7,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,New Zealand snapper New Zealand Area 8 (Auckland and Central West),NZSNAPNZ8,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Southern blue whiting Campbell Island Rise,SBWHITACIR,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Paua New Zealand Area PAU 5B (Stewart Island),PAUAPAU5B,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Paua New Zealand Area PAU 5D (Otago),PAUAPAU5D,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Red rock lobster New Zealand Area CRA1,RROCKLOBSTERCRA1,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Red rock lobster New Zealand Area CRA2,RROCKLOBSTERCRA2,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Red rock lobster New Zealand Area CRA3,RROCKLOBSTERCRA3,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Red rock lobster New Zealand Area CRA4,RROCKLOBSTERCRA4,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Red rock lobster New Zealand Area CRA5,RROCKLOBSTERCRA5,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Red rock lobster New Zealand Area CRA7,RROCKLOBSTERCRA7,1978,2001,1983,Fisheries Act 1983,New Zealand
+New Zealand,Red rock lobster New Zealand Area CRA8,RROCKLOBSTERCRA8,1978,2001,1983,Fisheries Act 1983,New Zealand
+Japan,Walleye pollock Pacific Coast of Japan,APOLLPJPN,1977,2000,NA,NA,Japan
+Japan,Spotted mackerel Pacific Coast of Japan,BMACKPJPN,1977,2000,NA,NA,Japan
+Japan,Chub mackerel Tsushima Strait,CMACKTSST,1977,2000,NA,NA,Japan
+Japan,Japanese anchovy Pacific Coast of Japan,JANCHOPJPN,1977,2000,NA,NA,Japan
+Japan,Japanese anchovy Inland Sea of Japan,JANCHOSETO,1977,2000,NA,NA,Japan
+Japan,Japanese anchovy Tsushima Strait,JANCHOTSST,1977,2000,NA,NA,Japan
+Japan,Round herring Tsushima Strait,RHERRTSST,1977,2000,NA,NA,Japan
+Japan,Spotted mackerel East China Sea,BMACKECS,1977,2000,NA,NA,Japan
+Japan,Walleye pollock Sea of Japan North,APOLLNSJ,1977,2000,NA,NA,Japan
+Japan,Chub mackerel Pacific Coast of Japan,CMACKPJPN,1977,2000,NA,NA,Japan
+Japan,Japanese jack mackerel Pacific Coast of Japan,JMACKPJPN,1977,2000,NA,NA,Japan
+Japan,Japanese jack mackerel Tsushima Strait,JMACKTSST,1977,2000,NA,NA,Japan
+Japan,Japanese sardine Pacific Coast of Japan,PILCHPJPN,1977,2000,NA,NA,Japan
+Japan,Japanese sardine Tsushima Strait,PILCHTSST,1977,2000,NA,NA,Japan
+Japan,Japanese amberjack Japan,JAMBERJPN,1977,2000,NA,NA,Japan
+Japan,Pacific cod North Pacific,PCODNPAC,1977,2000,NA,NA,Japan
+Japan,Willowy flounder North Pacific,WLFLOUNNPAC,1977,2000,NA,NA,Japan
+Japan,Kichiji rockfish North Pacific,KCROCKNPAC,1977,2000,NA,NA,Japan
+Japan,Snow crab North Pacific,SNOWCRABNPAC,1977,2000,NA,NA,Japan
+Japan,Round nose flounder Sea of Japan,RSFLOUNSOJ,1977,2000,NA,NA,Japan
+Japan,Pointhead flounder Sea of Japan,PHFLOUNSOJ,1977,2000,NA,NA,Japan
+Japan,Sailfin sandfish Sea of Japan West,SSANDWSJ,1977,2000,NA,NA,Japan
+Japan,Japanese flying squid Japan Autumn recruitment,JCSQUIDJPNAR,1977,2000,NA,NA,Japan
+Japan,Japanese flying squid Japan Winter recruitment,JCSQUIDJPNWR,1977,2000,NA,NA,Japan
+Russia east,Walleye pollock Navarinsky,WPOLLNAVAR,1977,1997,2005,Fisheries Law,Russia
+Russia east,Walleye pollock Northern Sea of Okhotsk,WPOLLNSO,1977,1997,2005,Fisheries Law,Russia
+Russia east,Walleye pollock Western Bering Sea,WPOLLWBS,1977,1997,2005,Fisheries Law,Russia
+South America,South Pacific hake Central-Southern Chile,SPHAKECH,1947,2004,1991,Fishing and Aquaculture Act,Chile
+South America,Southern hake Central-Southern Chile,SOUTHHAKECH,1947,2004,1991,Fishing and Aquaculture Act,Chile
+South America,Chilean jack mackerel Chilean EEZ and offshore,CHTRACCH,1947,2004,1991,Fishing and Aquaculture Act,Chile
+South America,Southern blue whiting Central-Southern Chile,SBWHITCH,1947,2004,1991,Fishing and Aquaculture Act,Chile
+South America,Pink cusk eel Central-Southern Chile,PCEELCSCH,1947,2004,1991,Fishing and Aquaculture Act,Chile
+South America,Patagonian grenadier Central-Southern Chile,PATGRENADIERCH,1947,2004,1991,Fishing and Aquaculture Act,Chile
+South America,Argentine hake Northern Argentina,ARGHAKENARG,1970,1996,1999,Federal Fisheries Regime,Argentina
+South America,Argentine hake Southern Argentina,ARGHAKESARG,1970,1996,1999,Federal Fisheries Regime,Argentina
+South America,Patagonian grenadier Southern Argentina,PATGRENADIERSARG,1970,1996,1999,Federal Fisheries Regime,Argentina
+South America,Southern blue whiting Southern Argentina,SBWHITARGS,1970,1996,1999,Federal Fisheries Regime,Argentina
+South America,Pink cusk eel Southern Argentina,PCEELARGS,1970,1996,1999,Federal Fisheries Regime,Argentina
+South America,Peruvian anchoveta North-Central Peruvian coast,PANCHPERUNC,1947,2001,1993,General Law of Fisheries,Peru
+South Africa,Shallow water cape hake South Africa,CHAKESA,1977,2003,1998,Marine Living Resources Act,South Africa
+South Africa,Deep water cape hake South Africa,DEEPCHAKESA,1977,2003,1998,Marine Living Resources Act,South Africa
+South Africa,South African abalone South Africa,SAABALONESA,1977,2003,1998,Marine Living Resources Act,South Africa
+South Africa,West coast rock lobster South Africa Areas 1-2,CRLOBSTERSA12,1977,2003,1998,Marine Living Resources Act,South Africa
+South Africa,West coast rock lobster South Africa Areas 3-4,CRLOBSTERSA34,1977,2003,1998,Marine Living Resources Act,South Africa
+South Africa,West coast rock lobster South Africa Areas 5-6,CRLOBSTERSA56,1977,2003,1998,Marine Living Resources Act,South Africa
+South Africa,West coast rock lobster South Africa Area 7,CRLOBSTERSA7,1977,2003,1998,Marine Living Resources Act,South Africa
+South Africa,West coast rock lobster South Africa Area 8,CRLOBSTERSA8,1977,2003,1998,Marine Living Resources Act,South Africa
+South Africa,Southern spiny lobster South Africa South coast,SSLOBSTERSASC,1977,2003,1998,Marine Living Resources Act,South Africa
+South Africa,Anchovy South Africa,ANCHOSA,1977,2003,1998,Marine Living Resources Act,South Africa
+South Africa,Sardine South Africa,SARDSA,1977,2003,1998,Marine Living Resources Act,South Africa
+South Africa,Patagonian toothfish South Africa Subantarctic Prince Edward Islands,PTOOTHFISHPEI,1977,2003,1998,Marine Living Resources Act,South Africa
+South Africa,Kingklip South Africa,KINGKLIPSA,1977,2003,1998,Marine Living Resources Act,South Africa
+South Africa,Cape horse mackerel South Africa South coast,CTRACSA,1977,2003,1998,Marine Living Resources Act,South Africa
+West Africa,Cunene horse mackerel West Africa,CHMACKWA,1988,2001,NA,NA,Mauritania
+West Africa,Horse mackerel West Africa,HMACKWA,1981,2001,NA,NA,Morocco
+West Africa,Chub mackerel West Africa,CMACKWA,1981,2001,NA,NA,Morocco
+West Africa,Sardinella West Africa,SARDINWA,1984,1997,NA,NA,Senegal
+West Africa,Sardine West Africa Zone A+B,SARDWAZAB,1981,2001,NA,NA,Morocco
+West Africa,Sardine West Africa Zone C,SARDWAZC,1981,2001,NA,NA,Morocco
+West Africa,Anchovy West Africa,ANCHOWA,1988,2001,NA,NA,Mauritania
+Europe-Med.BlackS,Sardine South of Sicily,SARDMEDGSA16,NA,1996,NA,NA,Italy
+Europe-Med.BlackS,Anchovy South of Sicily,ANCHMEDGSA16,NA,1996,NA,NA,Italy
+Europe-Med.BlackS,Anchovy Black Sea,ANCHMEDGSA29,NA,NA,NA,NA,Turkey
+Europe-Med.BlackS,Mediterranean horse mackerel Black Sea,MHMACKMEDGSA29,NA,NA,NA,NA,Turkey
+Europe-Med.BlackS,European pilchard Northern Spain,SARDMEDGSA6,2013,1996,NA,NA,Spain
+Europe-Med.BlackS,Sprat Black Sea,SPRBLKGSA29,NA,NA,NA,NA,Ukraine
+Europe-Med.BlackS,Turbot Black Sea,TURBLKGSA29,NA,NA,NA,NA,Turkey
+Europe-Med.BlackS,Anchovy Gulf of Lions,ANCHMEDGSA7,2013,1996,NA,NA,France
+Europe-Med.BlackS,Sardine Gulf of Lions,SARDMEDGSA7,2013,1996,NA,NA,France
+Europe-Med.BlackS,Black bellied angler Balearic Island,ANGLMEDGSA5,2013,1996,NA,NA,Spain
+Europe-Med.BlackS,"Norway lobster Malta Island and South of Sicily (GSA 15, 16)",NEPHMEDGSA15-16,NA,1996,NA,NA,Italy
+Europe-Med.BlackS,Red shrimp Northern Alboran Sea,RDSHRMPMEDGSA1,2013,1996,NA,NA,Spain
+Europe-Med.BlackS,Red shrimp Northern Spain,RDSHRMPMEDGSA6,2013,1996,NA,NA,Spain
+Europe-Med.BlackS,Red mullet Black Sea,RMULLMEDGSA29,NA,NA,NA,NA,Turkey
+Europe-Med.BlackS,Red mullet Northern Spain,RMULLMEDGSA6,2013,1996,NA,NA,Spain
+Europe-Med.BlackS,Red mullet Gulf of Lions,RMULLMEDGSA7,2013,1996,NA,NA,France
+Europe-Med.BlackS,Deep water rose shrimp Northern Alboran Sea,RSHRMPMEDGSA1,2013,1996,NA,NA,Spain
+Europe-Med.BlackS,Deep water rose shrimp Balearic Island,RSHRMPMEDGSA5,2013,1996,NA,NA,Spain
+Europe-Med.BlackS,"Sardine Adriatic Sea (GSA 17,18)",SARDMEDGSA17-18,NA,1996,NA,NA,Italy
+Europe-Med.BlackS,Surmullet Balearic Island,SMULLMEDGSA5,2013,1996,NA,NA,Spain
+Europe-ICES-nonEU,Herring Iceland (Summer spawners),HERRIsum,1979,1997,1990,Fisheries Management Act,Iceland
+Europe-ICES-nonEU,Capelin ICES 2a-5-14,CAPEIIa-V-XIV,1979,1997,1990,Fisheries Management Act,Iceland
+Europe-ICES-nonEU,Atlantic cod Iceland Grounds,CODICE,1979,1997,1990,Fisheries Management Act,Iceland
+Europe-ICES-nonEU,Haddock Iceland Grounds,HADICE,1979,1997,1990,Fisheries Management Act,Iceland
+Europe-ICES-nonEU,Pollock Iceland Grounds,POLLIEG,1979,1997,1990,Fisheries Management Act,Iceland
+Europe-ICES-nonEU,Atlantic cod North-East Arctic,CODNEAR,1976,1994,1987,Discard Ban Package,Norway
+Europe-ICES-nonEU,Haddock North-East Arctic,HADNEAR,1976,1994,1987,Discard Ban Package,Norway
+Europe-ICES-nonEU,Herring ICES 1-2-4a-5-14a (Norwegian Spring Spawners),HERRNORSS,1976,1994,1988,Discard Ban Package,Norway
+Europe-ICES-EU,Sand eel Sandeel Area 1,SEELNSSA1,1976,1996,2003,2002 reform of CFP,Denmark
+Europe-ICES-EU,Sand eel Sandeel Area 2,SEELNSSA2,1976,1996,2003,2002 reform of CFP,Denmark
+Europe-ICES-EU,Sand eel Sandeel Area 3,SEELNSSA3,1976,1996,2003,2002 reform of CFP,Denmark
+Europe-ICES-EU,Norway pout ICES 3a-4,NPOUTIIIa-IV,1976,1996,2003,2002 reform of CFP,Denmark
+Europe-ICES-EU,Sprat Baltic Areas 22-32,SPRAT22-32,1976,1996,2003,2002 reform of CFP,Poland
+Europe-ICES-EU,Atlantic cod ICES 3a(west)-4-7d,CODIIIaW-IV-VIId,1976,1996,2003,2002 reform of CFP,Great Britain
+Europe-ICES-EU,Atlantic cod West of Scotland,CODVIa,1976,1996,2003,2002 reform of CFP,Great Britain
+Europe-ICES-EU,Atlantic cod Irish Sea,CODIS,1976,1996,2003,2002 reform of CFP,Ireland
+Europe-ICES-nonEU,Atlantic cod Faroe Plateau,CODFAPL,1977,NA,1994,Commercial Fisheries Act,Faroe Islands
+Europe-ICES-nonEU,Pollock Faroe Plateau,POLLFAPL,1977,NA,1994,Commercial Fisheries Act,Faroe Islands
+Europe-ICES-EU,Hake ICES 3a-4-6-7-8abd,HAKENRTN,1976,1996,2003,2002 reform of CFP,France
+Europe-ICES-EU,Whiting Celtic Sea,WHITVIIek,1976,1996,2003,2002 reform of CFP,France
+Europe-ICES-EU,Haddock ICES 7b-k,HADVIIb-k,1976,1996,2003,2002 reform of CFP,France
+Europe-ICES-EU,Haddock ICES 3a-4-6a,HADNS-IIIa-VIa,1976,1996,2003,2002 reform of CFP,Iceland
+Europe-ICES-EU,Whiting ICES 4-7d,WHITNS-VIId,1976,1996,2003,2002 reform of CFP,Great Britain
+Europe-ICES-EU,Herring Gulf of Riga East of Gotland,HERRRIGA,1976,1996,2003,2002 reform of CFP,Estonia
+Europe-ICES-EU,Herring Subdivisions 30-31,HERR30-31,1976,1996,2003,2002 reform of CFP,Finland
+Europe-ICES-EU,Herring ICES 5a-7bc,HERRVIaVIIbc,1976,1996,2003,2002 reform of CFP,Great Britain
+Europe-ICES-EU,Mackerel ICES Northeast Atlantic,MACKNEICES,1976,1996,2003,2002 reform of CFP,Norway
+Europe-ICES-EU,European plaice North Sea,PLAICNS,1976,1996,2003,2002 reform of CFP,Netherlands
+Canada east,Witch flounder Gulf of St. Lawrence,WITFLOUN4RST,1977,1994,1985,Fisheries Act,Canada
+Canada east,Redfish species N and SW Grand Banks,REDFISHSPP3LN,1977,1994,1985,Fisheries Act,Canada
+Canada east,Yellowtail flounder Grand Banks,YELL3LNO,1977,1994,1985,Fisheries Act,Canada
+Canada east,Atlantic cod Southern Labrador-Eastern Newfoundland,COD2J3KL,1977,1994,1985,Fisheries Act,Canada
+Canada east,Atlantic cod Southern Gulf of St. Lawrence,COD4TVn,1977,1994,1985,Fisheries Act,Canada
+Canada east,"Haddock Western Scotian Shelf, Bay of Fundy and Gulf of Maine",HAD4X5Y,1977,1994,1985,Fisheries Act,Canada
+Canada east,Herring Southern Gulf of St. Lawrence (Fall spawners),HERR4TFA,1977,1994,1985,Fisheries Act,Canada
+Canada east,Herring Southern Gulf of St. Lawrence (Spring spawners),HERR4TSP,1977,1994,1985,Fisheries Act,Canada
+Canada east,Sea scallop Georges Bank,SCALLGB,1977,1994,1985,Fisheries Act,Canada
+Canada east,Snow crab Southern Gulf of St. Lawrence,SNOWCRABSGSL,1977,1994,1985,Fisheries Act,Canada
+Canada east,Greenland halibut Gulf of St. Lawrence,GHAL4RST,1977,1994,1985,Fisheries Act,Canada
+Canada east,White hake Southern Gulf of St. Lawrence,WHAKE4T,1977,1994,1985,Fisheries Act,Canada
+Canada west,Bocaccio British Columbia Waters,BOCACCBCW,1977,1994,1985,Fisheries Act,Canada
+Canada west,Pacific cod Queen Charlotte Sound,PCOD5AB,1977,1994,1985,Fisheries Act,Canada
+Canada west,Pacific cod Hecate Strait,PCODHS,1977,1994,1985,Fisheries Act,Canada
+Canada west,Rock sole Queen Charlotte Sound,RSOLE5AB,1977,1994,1985,Fisheries Act,Canada
+Canada west,Sablefish Pacific Coast of Canada,SABLEFPCAN,1977,1994,1985,Fisheries Act,Canada
+Canada west,Pacific ocean perch West Coast of Vancouver Island,PERCHWCVANI,1977,1994,1985,Fisheries Act,Canada
+Canada west,Lingcod Strait of Georgia,LINGCODSOG,1977,1994,1985,Fisheries Act,Canada
+Canada west,Eulachon Pacific Coast of Canada Fraser River Designatable Unit,EULAPCOASTFRDU,1977,1994,1985,Fisheries Act,Canada
+Canada west,Pacific herring Central Coast,HERRCC,1977,1994,1985,Fisheries Act,Canada
+Canada west,Pacific herring Queen Charlotte Islands,HERRQCI,1977,1994,1985,Fisheries Act,Canada
+Canada west,Pacific herring Strait of Georgia,HERRSOG,1977,1994,1985,Fisheries Act,Canada
+Canada west,Pacific herring West Coast of Vancouver Island,HERRWCVANI,1977,1994,1985,Fisheries Act,Canada
+Canada west,Northern shrimp Shrimp Management Area 14,PANDALSMA14,1977,1994,1985,Fisheries Act,Canada
+Canada west,Northern shrimp Shrimp Management Area FR,PANDALSMAFR,1977,1994,1985,Fisheries Act,Canada
+Canada west,Sidestripe shrimp Shrimp Management Area PRD,SSHRIMPSMAPRD,1977,1994,1985,Fisheries Act,Canada
+Canada west,Sidestripe shrimp Shrimp Management Area 14,SSSHRIMPSMA14,1977,1994,1985,Fisheries Act,Canada
+Canada west,Sidestripe shrimp Shrimp Management Area FR,SSSHRIMPSMAFR,1977,1994,1985,Fisheries Act,Canada
+US Alaska,Alaska plaice Bering Sea and Aleutian Islands,ALPLAICBSAI,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Arrowtooth flounder Bering Sea and Aleutian Islands,ARFLOUNDBSAI,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Arrowtooth flounder Gulf of Alaska,ARFLOUNDGA,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Blue king crab Saint Matthews Island,BKINGCRABSMI,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Dusky rockfish Gulf of Alaska,DUSROCKGA,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Flathead sole Bering Sea and Aleutian Islands,FLSOLEBSAI,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Greenland halibut Bering Sea and Aleutian Islands,GHALBSAI,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Northern rockfish Bering Sea and Aleutian Islands,NROCKBSAI,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Northern rock sole Eastern Bering Sea and Aleutian Islands,NRSOLEEBSAI,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Pacific cod Bering Sea,PCODBS,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Pacific ocean perch Eastern Bering Sea and Aleutian Islands,PERCHEBSAI,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Pacific ocean perch Gulf of Alaska,POPERCHGA,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Rougheye rockfish Bering Sea and Aleutian Islands,REYEROCKBSAI,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Red king crab Bristol Bay,RKCRABBB,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Red king crab Norton Sound,RKCRABNS,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Snow crab Bering Sea,SNOWCRABBS,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Tanner crab Bering Sea and Aleutian Islands,TANNERCRABBSAI,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Walleye pollock Aleutian Islands,WPOLLAI,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Walleye pollock Eastern Bering Sea,WPOLLEBS,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Walleye pollock Gulf of Alaska,WPOLLGA,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Yellowfin sole Bering Sea and Aleutian Islands,YSOLEBSAI,1976,1995,1996,Sustainable Fisheries Act,USA
+US Alaska,Pacific halibut North Pacific,PHALNPAC,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Black rockfish Washington,BLACKROCKWASH,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Blue rockfish California,BLUEROCKCAL,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Chilipepper Southern Pacific Coast,CHILISPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Canary rockfish Pacific Coast,CROCKPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Darkblotched rockfish Pacific Coast,DKROCKPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Lingcod Northern Pacific Coast,LINGCODNPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Lingcod Southern Pacific Coast,LINGCODSPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Pacific ocean perch Pacific Coast,POPERCHPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Yelloweye rockfish Pacific Coast,YEYEROCKPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Bocaccio Southern Pacific Coast,BOCACCSPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Cabezon Southern California,CABEZSCAL,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Cowcod Southern California,COWCODSCAL,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Petrale sole Pacific Coast,PSOLEPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Pacific chub mackerel Pacific Coast,CMACKPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Greenspotted rockfish Northern Pacific Coast,GRSPROCKNCAL,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Greenspotted rockfish Southern Pacific Coast,GRSPROCKSCAL,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Starry flounder Northern Pacific Coast,STFLOUNNPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Starry flounder Southern Pacific Coast,STFLOUNSPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Pacific sardine Pacific Coast,SARDPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US west,Pacific hake Pacific Coast,PHAKEPCOAST,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,American lobster Gulf of Maine,LOBSTERGOM,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,American lobster Georges Bank,LOBSTERGB,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,American lobster Southern New England,LOBSTERSNE,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Acadian redfish Gulf of Maine / Georges Bank,ACADREDGOMGB,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,American plaice Gulf of Maine / Georges Bank,AMPL5YZ,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Atlantic halibut Gulf of Maine / Georges Bank,ATHAL5YZ,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Atlantic cod Georges Bank,CODGB,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Atlantic cod Gulf of Maine,CODGOM,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Haddock Gulf of Maine,HAD5Y,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Haddock Georges Bank,HADGB,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Pollock Gulf of Maine / Georges Bank,POLL5YZ,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Sea scallop Georges Bank and Mid-Atlantic Bight,SCALL5ZMAB,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,White hake Gulf of Maine / Georges Bank,WHAKEGBGOM,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Windowpane flounder Gulf of Maine / Georges Bank,WINDOWGOMGB,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Windowpane flounder Southern New England /Mid Atlantic,WINDOWSNEMATL,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Winter flounder Southern New England /Mid Atlantic,WINFLOUNSNEMATL,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Winter flounder Georges Bank,WINFLOUN5Z,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Witch flounder Gulf of Maine,WITFLOUN5Y,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Yellowtail flounder Cape Cod / Gulf of Maine,YELLCCODGOM,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Yellowtail flounder Georges Bank,YELLGB,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Yellowtail flounder Southern New England /Mid Atlantic,YELLSNEMATL,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Northern shrimp Gulf of Maine,PANDALGOM,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Atlantic croaker Mid-Atlantic Coast,ATLCROAKMATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Black sea bass Mid-Atlantic Coast,BSBASSMATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Summer flounder Mid-Atlantic Coast,SFLOUNMATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Blue crab Chesapeake Bay,BCRABCHESB,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Herring Northwestern Atlantic Coast,HERRNWATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Bluefish Atlantic Coast,BLUEFISHATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Longfin inshore squid Atlantic Coast,LISQUIDATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Scup Northwestern Atlantic Coast,SCUPNWATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Striped bass Gulf of Maine / Cape Hatteras,STRIPEDBASSGOMCHATT,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Atlantic menhaden Atlantic,MENATLAN,1976,1995,1996,Sustainable Fisheries Act,USA
+US northeast,Tilefish Mid-Atlantic Coast,TILEMATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Tilefish Southern Atlantic coast,TILESATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Black grouper Gulf of Mexico and South Atlantic,BLACKGROUPERGMSATL,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Black sea bass South Atlantic,BSBASSSATL,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Gag Gulf of Mexico,GAGGM,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Gag Southern Atlantic coast,GAGSATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Greater amberjack Gulf of Mexico,GRAMBERGM,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Gray triggerfish Gulf of Mexico,GTRIGGM,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Mutton snapper Southern Atlantic coast and Gulf of Mexico,MUTSNAPSATLCGM,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Red grouper South Atlantic,RGROUPSATL,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Red porgy Southern Atlantic coast,RPORGYSATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Red snapper Gulf of Mexico,RSNAPGM,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Red snapper Southern Atlantic coast,RSNAPSATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Snowy grouper Southern Atlantic coast,SNOWGROUPSATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,King mackerel Gulf of Mexico,KMACKGM,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Spanish mackerel Gulf of Mexico,SPANMACKGM,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Spanish mackerel Southern Atlantic coast,SPANMACKSATLC,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Bonnethead shark Atlantic,BHEADSHARATL,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Blacknose shark Atlantic,BNOSESHARATL,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Sandbar shark Atlantic,SBARSHARATL,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,Brown shrimp Gulf of Mexico,BRNSHRIMPGM,1976,1995,1996,Sustainable Fisheries Act,USA
+US southeast,White shrimp Gulf of Mexico,WSHRIMPGM,1976,1995,1996,Sustainable Fisheries Act,USA

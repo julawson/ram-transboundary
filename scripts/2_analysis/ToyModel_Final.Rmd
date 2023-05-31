@@ -1,0 +1,210 @@
+#Transboundary Stock Movement
+
+```{r load libraries}
+
+library(tidyverse)
+library(purrr)
+library(maptools)
+library(markovchain)
+
+```
+
+```{r toy model}
+
+# Growth parameters
+r <- 0.30  # Intrinsic growth rate
+K <- 10000  # Carrying capacity
+
+# Define initial parameters
+x_i <- 700  # Initial stock in patch i
+x_j <- 1000  # Initial stock in patch j
+h_i <- 10  # Harvest in patch i
+h_j <- 80  # Harvest in patch j
+d_ij <- 0  # Portion of young moving from patch i to patch j
+d_ji <- 0.7  # Portion of young moving from patch j to patch i
+
+timesteps <- 2  # Number of timesteps to simulate
+
+# Escapement functions
+e_i <- function(x_i, h_i) x_i - h_i
+e_j <- function(x_j, h_j) x_j - h_j
+
+# Growth functions
+g_i <- function(e_i, r, K) (r * e_i * (1 - (e_i / K)))
+g_j <- function(e_j, r, K) (r * e_j * (1 - (e_j / K)))
+
+# Initialize data frame for storing results
+results <- tibble(
+  timestep = integer(),
+  x_i = numeric(),
+  x_j = numeric()
+)
+
+# Run simulation
+for (t in 1:timesteps) {
+  
+  # Step 1. Calculate escapement following harvest
+  e_i_t <- e_i(x_i, h_i)
+  e_j_t <- e_j(x_j, h_j)
+
+  # Calculate new stock of young after growth
+  Y_i <- g_i(e_i_t, r, K)
+  Y_j <- g_j(e_j_t, r, K)
+  
+  # Calculate settlement of young fish that will move to a new patch
+  Y_i_to_j <- Y_i * d_ij
+  Y_j_to_i <- Y_j * d_ji
+  
+  # Growth of adult stock after escapement
+  x_i_mu <- e_i_t + g_i(e_i_t, r, K)
+  x_j_mu <- e_j_t + g_j(e_j_t, r, K)
+  
+  # Update stocks in each patch
+  x_i_new <- x_i_mu + Y_j_to_i 
+  x_j_new <- x_j_mu + Y_i_to_j 
+  
+  # Ensure populations don't go below 0
+  x_i_new <- max(x_i_new, 0)
+  x_j_new <- max(x_j_new, 0)
+  
+  # Save results
+  results <- results %>%
+    add_row(
+      timestep = t,
+      x_i = x_i_new,
+      x_j = x_j_new
+    )
+    
+  # Update the stock
+  x_i <- x_i_new
+  x_j <- x_j_new
+}
+
+plot_data <- results %>%
+  pivot_longer(cols = c(x_i, x_j), names_to = "patch", values_to = "population")
+    
+# Create ggplot for population dynamics
+population_plot <- ggplot(plot_data, aes(x = timestep, y = population, color = patch)) +
+  geom_line() +
+  labs(
+    title = "Fish Population Dynamics in Patches i and j",
+    x = "Timestep",
+    y = "Population",
+    color = "Patch")
+
+population_plot
+
+```
+
+```{r quick test}
+
+# Growth parameters
+r <- 0.30  # Intrinsic growth rate
+K <- 10000  # Carrying capacity
+
+x_a <- 700  # Initial stock in patch a
+x_b <- 500  # Initial stock in patch b
+theta_ab <- 0.1 # Movement from patch a to b
+theta_ba <- 0 # Movement from patch b to a
+h_a <- 5  # Harvest in patch a
+h_b <- 20  # Harvest in patch b
+
+# Escapement functions
+e_a <- function(x_a, h_a) x_a - h_a
+e_b <- function(x_b, h_b) x_b - h_b
+
+# Growth functions
+f_a <- function(e_a, r, K) e_a + r * e_a * (1 - (e_a / K))
+f_b <- function(e_b, r, K) e_b + r * e_b * (1 - (e_b / K)) 
+
+timesteps <- 2
+
+# Calculate one time step
+
+# Initialize data frame for storing results
+results <- tibble(
+  timestep = integer(),
+  x_a = numeric(),
+  x_b = numeric(),
+  f_a_t = numeric(),
+  f_b_t = numeric(),
+  x_a_new = numeric(),
+  x_b_new = numeric()
+)
+
+# Run simulation
+for (t in 1:timesteps) {
+  
+  # Step 1. Calculate escapement following harvest
+  e_a_t <- e_a(x_a, h_a)
+  e_b_t <- e_b(x_b, h_b)
+  
+  # Calculate new stock of young after growth
+  f_a_t <- g_i(e_a_t, r, K)
+  f_b_t <- g_j(e_b_t, r, K)
+  
+  # Calculate new stock
+  #x_a_new <- (1 - theta_ab) * f_a_t
+  #x_b_new <- (theta_ab * f_a_t) + f_b_t
+  x_a_new <- (theta_ba * f_b_t) + f_a_t
+  x_b_new <- (theta_ab * f_a_t) + f_b_t
+  
+  # Save results
+  results <- results %>%
+    add_row(
+      timestep = t,
+      x_a = x_a,
+      x_b = x_b,
+      f_a_t = f_a_t,
+      f_b_t = f_b_t,
+      x_a_new = x_a_new,
+      x_b_new = x_b_new
+    )
+    
+  # Update the stock
+  x_a <- x_a_new
+  x_b <- x_b_new
+}
+
+plot_data <- results %>%
+  pivot_longer(cols = c(x_a, x_b), names_to = "patch", values_to = "population")
+
+population_plot <- ggplot(plot_data, aes(x = timestep, y = population, color = patch)) +
+  theme_bw() +
+  geom_line() +
+  labs(
+    title = "Fish Population Dynamics in Patches A and B",
+    x = "Timestep",
+    y = "Population",
+    color = "Patch")
+population_plot
+
+```
+
+```{r sole owner}
+
+### Calculating Economic Returns ###
+
+delta <- 0.3 # Discount factor
+
+p_i <- 50 # Price for patch i
+p_j <- 25 # Price for patch j
+c_i <- 5 # Marginal cost for patch i
+c_j <- 4 # Marginal cost for patch j
+
+# Marginal profit functions
+b_i <- function(p_i, c_i) p_i - c_i
+b_j <- function(p_j, c_j) p_j - c_j
+
+# Calculate the marginal profit
+b_i_val <- b_i(p_i, c_i)
+b_j_val <- b_j(p_j, c_j)
+
+# Profit functions
+pi_i <- function(b_i, h_i) b_i * h_i
+pi_j <- function(b_i, h_j) b_j * h_j
+
+X_t <- results$x_i
+
+
+```

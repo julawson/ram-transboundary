@@ -1,0 +1,39 @@
+## Transboundary Larval Movement ##
+# Recoding Owen and Renato's analysis from Stata to R #
+
+```{r setup, include=FALSE}
+
+library(grid)
+library(gridExtra)
+library(tidyverse)
+library(here)
+library(rfishbase)
+library(nlme)
+library(lme4)
+library(plm)
+library(lmtest)
+library(lfe)
+
+main <- read_csv(here("data", "edf_cs_ram_panel.csv")) %>% 
+  filter(year>=1990) %>% 
+  mutate(shared = ifelse(num_eezs_cutoff0 == 1, 0, 1))
+
+```
+
+``` {r panel}
+
+panel <- pdata.frame(main, index=c("stock_cs_id","year"))
+
+panel$shared <- panel$shared
+panel$n_eez <- panel$num_eezs_cutoff0
+panel$hhi <- panel$hhi_cutoff0
+panel$hs <- panel$is_high_seas_cutoff0
+
+shared0 <- felm(status_bio ~ shared + hs + age_50_mat + max_length + isscaap + IQ + ITQ + IVQ + Coop + CommunityQuota + TURF + multiple_cs_progs + primary_fao_region_name*year, data=panel, model="within", effect="twoways")
+
+hhi0 <- plm(y ~ hhi + hs + age + max + i.cate + iq + itq + ivq + coop + communityquota + turf + mult + i.space*i.year, data=pdata, index=c("id","year"), model="within", effect="twoways")
+eez0 <- plm(y ~ leez + hs + age + max + i.cate + iq + itq + ivq + coop + communityquota + turf + mult + i.space*i.year, data=pdata, index=c("id","year"), model="within", effect="twoways")
+
+summary(shared0)
+
+```

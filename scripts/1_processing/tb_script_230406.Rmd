@@ -1,0 +1,181 @@
+## Transboundary Larval Movement ##
+
+```{r setup, include=FALSE}
+
+library(grid)
+library(gridExtra)
+library(tidyverse)
+library(here)
+library(rfishbase)
+library(nlme)
+library(lme4)
+
+#Loading RAM Legacy Database
+load(here("data", "DBdata[asmt][v4.496].RData"))
+
+ram <- timeseries_values_views %>% 
+  drop_na(BdivBmsypref, UdivUmsypref) %>%
+  select(stockid, year, BdivBmsypref, UdivUmsypref) %>%
+  filter(year>=1990) 
+  
+metadata_edit <- metadata %>% 
+  select(-assessid, -stocklong, -assessyear, -managementauthority, -assessorfull, -FisheryType, -taxGroup, -mostrecent) %>% 
+  mutate(primary_country = ifelse(primary_country == "USA", "United States", primary_country)) %>% 
+  mutate(primary_country = ifelse(region == "US Alaska", "US Alaska", primary_country)) %>% 
+  mutate(primary_country = ifelse(region == "US Alaska (Pacific Salmon)","US Alaska", primary_country)) %>% 
+  mutate(primary_country = ifelse(primary_country == "US Alaska","Alaska", primary_country))
+
+#Loading Liu and Molina Database
+all_sp_prop_eezs <- readRDS(here("data", "all_sp_prop_eezs.rds")) %>% 
+  mutate(prop_perc=prop*100)
+
+#Creating 1% cutoff (to add to other cutoffs)
+num_eezs_cutoff1 <- readRDS(here("data", "all_sp_prop_eezs.rds")) %>% 
+  filter(rgn_typ=="eez") %>% 
+  filter(prop>=0.01) %>% 
+  group_by(stockid) %>% 
+  add_tally() %>% 
+  rename(num_eezs_cutoff1=n) %>% 
+  select(stockid,num_eezs_cutoff1) %>%  distinct
+
+#Loading Ramesh Database
+ramesh <- read.csv(here("data", "edgecontribs-cl.csv")) %>% 
+  filter(portion != 0.000000e+00) %>% 
+  rename(scientificname=species) %>% 
+  #rename(primary_country=source) %>% 
+  mutate(source = ifelse(source == "Cura\xe7ao", "Curacao", source)) %>% 
+  mutate(sink = ifelse(sink == "Cura\xe7ao", "Curacao", sink)) %>% 
+  mutate(source = ifelse(source == "R\xe9union", "Reunion", source)) %>% 
+  mutate(sink = ifelse(sink == "R\xe9union", "Reunion", sink)) %>%
+  mutate(source = ifelse(source == "R\xe9union", "Reunion", source)) %>%
+  mutate(sink = ifelse(sink == "R\xe9union", "Reunion", sink)) %>% 
+  group_by(scientificname) %>% 
+  mutate(sum = sum(portion)) %>% 
+  ungroup() %>% 
+  group_by(source, scientificname) %>% 
+  mutate(perc_larval = (portion/sum)*100) %>% 
+  mutate(perc_larval = round(perc_larval, digits=6))
+
+#Loading Chris Free database, which includes: intrinsic growth rate 'r', carrying capacity 'B0', shape parameter 'p'
+free <- read.csv(here("data", "RAM_sp_model_fits.csv")) %>% 
+  select(stockid, r, B0)
+
+#Loading Melnychuk management data
+mgmt_mel <- read.csv(here("data","stock-rebuilding-years_v2019-07-07.csv"), stringsAsFactors = TRUE) %>% 
+  pivot_longer(!stockid, names_to = "year", values_to = "RBP") %>% 
+  separate(year, c("X","year"), sep="X") %>% 
+  select(-X) 
+mgmt_mel$year <- as.integer(mgmt_mel$year)
+
+#Loading Melnychuk national policy data
+mgmt_mel2 <- read.csv(here("data","stock-national-policies_v2019-07-07.csv"), stringsAsFactors = TRUE) %>% 
+  select(stockid, year_nat)
+
+#Loading Melnychuk $$ data
+ex_vessel <- read.csv(here("data","pred-obs-exv-price-ts-ram-stocks_v2019-07-07.csv")) %>% 
+  select(stockid, year, pred_real_price, pred_nominal_price)
+
+#Loading management binary data
+mgmt <- read.csv(here("data","edf_cs_ram_panel.csv")) %>% 
+  select(-stock_cs_id,-cs_prog_name, -cs_prog_id) %>% 
+  distinct() %>% 
+  group_by(stockid, year) %>% 
+  mutate(ITQ=sum(ITQ),
+         IQ=sum(IQ),
+         IVQ=sum(IVQ),
+         Coop=sum(Coop),
+         multiple_cs_progs=sum(multiple_cs_progs),
+         CommunityQuota=sum(CommunityQuota),
+         TURF=sum(TURF)) %>% 
+  distinct() %>% 
+  mutate(ITQ = ifelse(ITQ > 1, 1, ITQ),
+         IQ = ifelse(IQ > 1, 1, IQ),
+         IVQ = ifelse(IVQ > 1, 1, IVQ),
+         Coop = ifelse(Coop > 1, 1, Coop),
+         multiple_cs_progs = ifelse(multiple_cs_progs >1, 1, multiple_cs_progs),
+         CommunityQuota = ifelse(CommunityQuota > 1, 1, CommunityQuota),
+         TURF=ifelse(TURF > 1, 1, TURF)) %>% 
+  ungroup() %>% 
+  left_join(mgmt_mel) %>%  #Adding in Rebuilding Plan 
+  mutate(RBP=replace_na(RBP, 0)) %>% 
+  left_join(mgmt_mel2, by=c("stockid")) %>% 
+  mutate(national=case_when(year >= year_nat ~ 1)) %>% 
+  mutate(national=replace_na(national, 0)) %>% 
+  select(-year_nat, -catch) %>% 
+  select(-stocklong, -hhi_cutoff0, -hhi_cutoff5, -hhi_cutoff10, -hhi_cutoff15, -hhi_cutoff20, -hhi_cutoff25) %>% 
+  left_join(num_eezs_cutoff1)
+
+```
+
+
+```{r fishbase aspect ratio}
+
+## Aspect Ratio by Genera, then matched to RAM Stocks ##
+
+all_species <- all_sp_prop_eezs %>% left_join(metadata, by=c("stockid")) %>% 
+  select(stockid, stocklong, scientificname, commonname, total_cells, ohi_rgn, n_cells, prop, rgn_nam)
+
+forfb <- all_species %>% 
+  distinct(scientificname) %>% drop_na()
+
+specieslist <- forfb[['scientificname']]
+
+all_species_genera <- all_sp_prop_eezs %>% left_join(metadata, by=c("stockid")) %>% 
+  select(stockid, stocklong, scientificname, commonname, total_cells, ohi_rgn, n_cells, prop, rgn_nam) %>% 
+  separate(scientificname, c("Genus", "Species")) %>% 
+  select(-Species)
+
+fbswim <- swimming(species_list = specieslist) %>% drop_na(AspectRatio) %>% 
+  select(Species, AspectRatio) %>% 
+  rename(scientificname=Species) %>% 
+  separate(scientificname, c("Genus", "Species")) %>% 
+  left_join(all_species_genera, by=c("Genus")) %>% 
+  drop_na(AspectRatio) %>% 
+  distinct(stockid,AspectRatio) %>% 
+  group_by(stockid) %>% 
+  mutate(mean_AR=mean(AspectRatio)) %>% 
+  select(-AspectRatio) %>% 
+  distinct() %>% 
+  rename(AspectRatio=mean_AR)
+
+```
+
+```{r full clean of ramesh}
+
+#Maximizing species/country list
+
+larval_names <- ramesh %>% 
+  pivot_longer(cols=source:sink,
+               names_to="type") %>% 
+  rename(country=value) %>% 
+  group_by(scientificname, country) %>% 
+  select(scientificname, country, type) %>% 
+  ungroup() %>% 
+  select(-type) %>% 
+  distinct() %>% 
+  group_by(scientificname) %>% 
+  add_tally() %>% 
+  rename(n_larval=n)
+
+larval_names2<- ramesh %>% 
+  pivot_longer(cols=source:sink,
+               names_to="type") %>% 
+  rename(country=value) %>% 
+  group_by(scientificname, country) %>% 
+  select(scientificname, country, type) %>% 
+  left_join(larval_names)
+
+species_list <- larval_names2 %>% 
+  rename(primary_country=country) %>% 
+  select(-type) %>% 
+  left_join(metadata, by=c("scientificname","primary_country")) %>%  drop_na %>% distinct() %>% 
+  select(scientificname, primary_country, n_larval, stockid)
+
+```
+
+```{r full dataset}
+
+full_database <- mgmt %>% 
+  
+
+```

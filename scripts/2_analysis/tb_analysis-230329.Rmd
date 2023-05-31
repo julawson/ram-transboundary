@@ -1,0 +1,103 @@
+## Transboundary Larval Movement ##
+
+```{r setup, include=FALSE}
+
+library(grid)
+library(gridExtra)
+library(tidyverse)
+library(here)
+library(rfishbase)
+library(plm)
+library(nlme)
+library(gplots)
+library(data.table)
+library(panelView)
+
+```
+
+```{r basic panel}
+max_panel <- read.csv(here("data", "max_panel.csv")) %>% #274 stocks
+  filter(year>=1990) #%>% 
+  #filter(n_larval>=2)
+
+##OLS Model to begin with###
+#Model without larval effects
+ols1_basic <- lm(BdivBmsypref ~ n_larval, data=max_panel)
+summary(ols1_basic)
+
+#Model with larval effects
+ols2_basic <- lm(BdivBmsypref ~ n_eez + n_larval, data=max_panel)
+summary(ols2_basic)
+
+ggplot(max_panel, aes(x = n_larval, y = BdivBmsypref)) +
+  geom_point() +
+  geom_smooth(method="lm")
+
+plotmeans(BdivBmsypref ~ n_larval, data=max_panel)
+
+```
+
+```{r intermediate panel}
+inter_panel <- read.csv(here("data", "intermediate_panel.csv")) %>% #115 stocks
+  filter(year>=1990) %>% 
+  filter(n_larval<100)
+
+##OLS Model to begin with###
+#Model without larval effects
+ols1_inter <- lm(status_f ~ shared_eez + n_eez + national + multiple_cs_progs + IQ + ITQ + IVQ + Coop + CommunityQuota + TURF + RBP + r + B0 + age_50_mat + max_length + pred_real_price, data=inter_panel)
+summary(ols1_inter)
+
+#Model with larval effects
+ols2_inter <- lm(status_f ~ shared_eez + shared_larval + n_eez + n_larval + national + multiple_cs_progs + IQ + ITQ + IVQ + Coop + CommunityQuota + TURF + RBP + r + B0 + age_50_mat + max_length + pred_real_price, data=inter_panel)
+summary(ols2_inter)
+
+ggplot(inter_panel, aes(x = n_larval, y = status_f)) +
+  geom_point() +
+  geom_smooth(method="lm")
+
+plotmeans(status_f ~ n_larval, data=inter_panel)
+
+```
+
+```{r import clean panel}
+full_panel <- read.csv(here("data", "full_panel.csv")) %>% #67 stocks
+  filter(year>=1990)
+
+panelview(status_bio ~ shared_eez + shared_larval + n_eez + n_larval + national + multiple_cs_progs + IQ + ITQ + IVQ + Coop + CommunityQuota + TURF + RBP + r + B0 + AspectRatio + age_50_mat + max_length + pred_real_price, data=full_panel, index=c("stockid","year"))
+
+##OLS Model to begin with###
+#Model without larval effects
+ols1 <- lm(status_bio ~ shared_eez + n_eez + national + multiple_cs_progs + IQ + ITQ + IVQ + Coop + CommunityQuota + TURF + RBP + r + B0 + AspectRatio + age_50_mat + max_length + pred_real_price, data=full_panel)
+summary(ols1)
+
+#Model with larval effects
+ols2 <- lm(status_bio ~ shared_larval + n_larval + national + multiple_cs_progs + IQ + ITQ + IVQ + Coop + CommunityQuota + TURF + RBP + r + B0 + AspectRatio + age_50_mat + max_length + pred_real_price, data=full_panel)
+summary(ols2)
+
+#Looking at plots
+plotmeans(status_f ~ n_eez, data=full_panel)
+plotmeans(status_bio ~ n_larval, data=full_panel)
+plotmeans(status_f~ AspectRatio, data=full_panel)
+plotmeans(status_f ~ r, data=full_panel)
+
+ggplot(full_panel, aes(x = shared_larval, y = status_bio)) +
+  geom_point() +
+  geom_smooth(method="lm")
+
+
+cor.test(full_panel$shared_larval, full_panel$shared_eez)
+```
+
+
+```{r mixed effects model}
+
+# Fixed Effects: shared_eez, shared_larval, n_eez, n_larval
+# Random Effects: r, B0, AspectRatio, age_50_mat, max_length
+
+mixed.lmer <- lmer(status_bio ~ n_eez + (1|r) + (1|B0) + (1|age_50_mat) + (1|max_length), data=inter_panel)
+summary(mixed.lmer)
+
+plot(mixed.lmer)
+qqnorm(resid(mixed.lmer))
+qqline(resid(mixed.lmer))
+```

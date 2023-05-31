@@ -1,0 +1,135 @@
+## Transboundary Larval Movement ##
+
+```{r setup, include=FALSE}
+
+library(grid)
+library(gridExtra)
+library(tidyverse)
+library(here)
+library(rfishbase)
+library(plm)
+library(nlme)
+library(gplots)
+library(data.table)
+library(panelView)
+library(jtools)
+
+```
+
+
+```{r import clean panel}
+ratio_panel_0 <- read.csv(here("data", "ratio_panel.csv")) %>% #74 stocks all-in, to 62 stocks excluding >= high seas 25% 
+  filter(year>=1990) %>% 
+  select(-rgn_nam, -ohi_rgn, -prop_perc, -n_cells, -prop) %>% 
+  distinct() %>% 
+  rename(ratio=ratio) %>% 
+  rename(shared_eez=shared_eez0) %>% 
+  rename(is_high_seas_cutoff=is_high_seas_cutoff0)
+
+ratio_panel_1 <- read.csv(here("data", "ratio_panel.csv")) %>% #74 stocks all-in, to 62 stocks excluding >= high seas 25% 
+  filter(year>=1990) %>% 
+  select(-rgn_nam, -ohi_rgn, -prop_perc, -n_cells, -prop) %>% 
+  distinct() %>% 
+  mutate(ratio = num_eezs_cutoff1/n_larval) %>% 
+  rename(shared_eez=shared_eez1) %>% 
+  rename(is_high_seas_cutoff=is_high_seas_cutoff0)
+
+ratio_panel_5 <- read.csv(here("data", "ratio_panel.csv")) %>% #74 stocks all-in, to 62 stocks excluding >= high seas 25% 
+  filter(year>=1990) %>% 
+  select(-rgn_nam, -ohi_rgn, -prop_perc, -n_cells, -prop) %>% 
+  distinct() %>% 
+  mutate(ratio = num_eezs_cutoff5/n_larval) %>% 
+  rename(shared_eez=shared_eez5) %>% 
+  rename(is_high_seas_cutoff=is_high_seas_cutoff5)
+
+ratio_panel_10 <- read.csv(here("data", "ratio_panel.csv")) %>% #74 stocks all-in, to 62 stocks excluding >= high seas 25% 
+  filter(year>=1990) %>% 
+  select(-rgn_nam, -ohi_rgn, -prop_perc, -n_cells, -prop) %>% 
+  distinct() %>% 
+  mutate(ratio = num_eezs_cutoff10/n_larval) %>% 
+  rename(shared_eez=shared_eez10) %>% 
+  rename(is_high_seas_cutoff=is_high_seas_cutoff10)
+
+ratio_panel_15 <- read.csv(here("data", "ratio_panel.csv")) %>% #74 stocks all-in, to 62 stocks excluding >= high seas 25% 
+  filter(year>=1990) %>% 
+  select(-rgn_nam, -ohi_rgn, -prop_perc, -n_cells, -prop) %>% 
+  distinct() %>% 
+  mutate(ratio = num_eezs_cutoff15/n_larval) %>% 
+  rename(shared_eez=shared_eez15) %>% 
+  rename(is_high_seas_cutoff=is_high_seas_cutoff15)
+
+ratio_panel_20 <- read.csv(here("data", "ratio_panel.csv")) %>% #74 stocks all-in, to 62 stocks excluding >= high seas 25% 
+  filter(year>=1990) %>% 
+  select(-rgn_nam, -ohi_rgn, -prop_perc, -n_cells, -prop) %>% 
+  distinct() %>% 
+  mutate(ratio = num_eezs_cutoff20/n_larval) %>% 
+  rename(shared_eez=shared_eez20) %>% 
+  rename(is_high_seas_cutoff=is_high_seas_cutoff20)
+
+ratio_panel_25 <- read.csv(here("data", "ratio_panel.csv")) %>% #74 stocks all-in, to 62 stocks excluding >= high seas 25% 
+  filter(year>=1990) %>% 
+  select(-rgn_nam, -ohi_rgn, -prop_perc, -n_cells, -prop) %>% 
+  distinct() %>% 
+  mutate(ratio = num_eezs_cutoff25/n_larval) %>% 
+  rename(shared_eez=shared_eez25) %>% 
+  rename(is_high_seas_cutoff=is_high_seas_cutoff25)
+
+##F/FMSY OLS Model with Ratio##
+ols <- lm(status_f ~ shared_eez + ratio + is_high_seas_cutoff + age_50_mat + max_length + r + B0 + multiple_cs_progs + IQ + ITQ + IVQ + Coop + RBP + national, data=ratio_panel_0, na.action = na.omit)
+ols1 <- lm(status_f ~  shared_eez + ratio + is_high_seas_cutoff + age_50_mat + max_length + r + B0 + multiple_cs_progs + IQ + ITQ + IVQ + Coop + RBP + national, data=ratio_panel_1, na.action = na.omit)
+ols5 <- lm(status_f ~ shared_eez + ratio + is_high_seas_cutoff + age_50_mat + max_length + r + B0 + multiple_cs_progs + IQ + ITQ + IVQ + Coop + RBP + national, data=ratio_panel_5, na.action = na.omit)
+ols10 <- lm(status_f ~ shared_eez + ratio + is_high_seas_cutoff + age_50_mat + max_length + r + B0 + multiple_cs_progs + IQ + ITQ + IVQ + Coop + RBP + national, data=ratio_panel_10, na.action = na.omit)
+ols15 <- lm(status_f ~ shared_eez + ratio + is_high_seas_cutoff + age_50_mat + max_length + r + B0 + multiple_cs_progs + IQ + ITQ + IVQ + Coop + RBP + national, data=ratio_panel_15, na.action = na.omit)
+ols20 <- lm(status_f ~ shared_eez + ratio + is_high_seas_cutoff + age_50_mat + max_length + r + B0 + multiple_cs_progs + IQ + ITQ + IVQ + Coop + RBP + national, data=ratio_panel_20, na.action = na.omit)
+ols25 <- lm(status_f ~ shared_eez + ratio + is_high_seas_cutoff + age_50_mat + max_length + r + B0 + multiple_cs_progs + IQ + ITQ + IVQ + Coop + RBP + national, data=ratio_panel_25, na.action = na.omit)
+
+
+plot_summs(ols,ols1,ols5,ols10, ols15,ols20,ols25,coefs=c("ratio"))
+
+summary(ols1)
+summary(ols5)
+summary(ols10)
+summary(ols15)
+#summary(ols20)
+#summary(ols25)
+
+##F/FMSY OLS Model with Ratio##
+ols <- lm(status_bio ~ ratio0, data=ratio_panel)
+ols1 <- lm(status_bio ~ ratio1, data=ratio_panel)
+ols5 <- lm(status_bio ~ ratio5, data=ratio_panel)
+ols10 <- lm(status_bio ~ ratio10, data=ratio_panel)
+ols15 <- lm(status_bio ~ ratio15, data=ratio_panel)
+ols20 <- lm(status_bio ~ ratio20, data=ratio_panel)
+ols25 <- lm(status_bio ~ ratio25, data=ratio_panel)
+summary(ols)
+summary(ols1)
+summary(ols5)
+summary(ols10)
+summary(ols15)
+summary(ols20)
+summary(ols25)
+
+plot_summs(ols,ols1,ols5,ols10,ols15,ols20,ols25)
+
+```
+
+
+```{r create figure of results}
+
+ggplot(ratio_panel) +
+  geom_point(aes(x = ratio25, y = status_f)) +
+  geom_smooth(method="lm")
+
+
+
+
+ggplot(ratio_panel, aes(y=status_f)) + 
+  geom_point(aes(x = ratio0),colour="red") + 
+  stat_smooth(aes(y = status_f), method="lm",se=FALSE) +
+  geom_point(aes(x = ratio5),colour="green") + 
+  stat_smooth(aes(status_f),method="lm",se=FALSE) +
++
+geom_jitter(aes(x3,y3),colour="blue")+geom_smooth(aes(x3,y3,col="blue"),method=
+"lm",se=FALSE)
+
+```

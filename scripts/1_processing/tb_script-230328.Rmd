@@ -1,0 +1,225 @@
+## Transboundary Larval Movement ##
+
+```{r setup, include=FALSE}
+
+library(grid)
+library(gridExtra)
+library(tidyverse)
+library(here)
+library(rfishbase)
+library(nlme)
+library(lme4)
+
+#Loading RAM Legacy Database
+load(here("data", "DBdata[asmt][v4.496].RData"))
+
+ram <- timeseries_values_views %>% 
+  drop_na(BdivBmsypref, UdivUmsypref) %>%
+  select(stockid, year, BdivBmsypref, UdivUmsypref) %>%
+  filter(year>=1990) 
+  
+metadata_edit <- metadata %>% 
+  select(-assessid, -stocklong, -assessyear, -managementauthority, -assessorfull, -FisheryType, -taxGroup, -primary_FAOarea, -mostrecent) %>% 
+  mutate(primary_country = ifelse(primary_country == "USA", "United States", primary_country))
+
+#Loading Liu and Molina Database
+all_sp_prop_eezs <- readRDS(here("data", "all_sp_prop_eezs.rds")) %>% 
+  mutate(prop_perc=prop*100)
+
+#Loading Ramesh Database
+ramesh <- read.csv(here("data", "edgecontribs-cl.csv")) %>% 
+  filter(portion != 0.000000e+00) %>% 
+  rename(scientificname=species) %>% 
+  #rename(primary_country=source) %>% 
+  mutate(source = ifelse(source == "Cura\xe7ao", "Curacao", source)) %>% 
+  mutate(sink = ifelse(sink == "Cura\xe7ao", "Curacao", sink)) %>% 
+  mutate(source = ifelse(source == "R\xe9union", "Reunion", source)) %>% 
+  mutate(sink = ifelse(sink == "R\xe9union", "Reunion", sink)) %>%
+  mutate(source = ifelse(source == "R\xe9union", "Reunion", source)) %>%
+  mutate(sink = ifelse(sink == "R\xe9union", "Reunion", sink)) %>%
+  mutate(source = ifelse(source == "Alaska", "United States", source)) %>% 
+  mutate(sink = ifelse(sink == "Alaska", "United States", sink)) 
+
+#Loading Chris Free database, which includes: intrinsic growth rate 'r', carrying capacity 'B0', shape parameter 'p'
+free <- read.csv(here("data", "RAM_sp_model_fits.csv")) %>% 
+  select(stockid, r, p, B0)
+
+#Loading Melnychuk management data
+mgmt_mel <- read.csv(here("data","stock-rebuilding-years_v2019-07-07.csv"), stringsAsFactors = TRUE) %>% 
+  pivot_longer(!stockid, names_to = "year", values_to = "RBP") %>% 
+  separate(year, c("X","year"), sep="X") %>% 
+  select(-X) 
+mgmt_mel$year <- as.integer(mgmt_mel$year)
+
+#Loading Melnychuk national policy data
+mgmt_mel2 <- read.csv(here("data","stock-national-policies_v2019-07-07.csv"), stringsAsFactors = TRUE) %>% 
+  select(stockid, year_nat)
+
+#Loading Melnychuk $$ data
+ex_vessel <- read.csv(here("data","pred-obs-exv-price-ts-ram-stocks_v2019-07-07.csv")) %>% 
+  select(stockid, year, pred_real_price, pred_nominal_price)
+
+#Loading management binary data
+mgmt <- read.csv(here("data","edf_cs_ram_panel.csv")) %>% 
+  select(-stock_cs_id,-cs_prog_name, -cs_prog_id) %>% 
+  distinct() %>% 
+  group_by(stockid, year) %>% 
+  mutate(ITQ=sum(ITQ),
+         IQ=sum(IQ),
+         IVQ=sum(IVQ),
+         Coop=sum(Coop),
+         multiple_cs_progs=sum(multiple_cs_progs),
+         CommunityQuota=sum(CommunityQuota),
+         TURF=sum(TURF)) %>% 
+  distinct() %>% 
+  mutate(ITQ = ifelse(ITQ > 1, 1, ITQ),
+         IQ = ifelse(IQ > 1, 1, IQ),
+         IVQ = ifelse(IVQ > 1, 1, IVQ),
+         Coop = ifelse(Coop > 1, 1, Coop),
+         multiple_cs_progs = ifelse(multiple_cs_progs >1, 1, multiple_cs_progs),
+         CommunityQuota = ifelse(CommunityQuota > 1, 1, CommunityQuota),
+         TURF=ifelse(TURF > 1, 1, TURF)) %>% 
+  ungroup() %>% 
+  left_join(mgmt_mel) %>%  #Adding in Rebuilding Plan 
+  mutate(RBP=replace_na(RBP, 0)) %>% 
+  left_join(mgmt_mel2, by=c("stockid")) %>% 
+  mutate(national=case_when(year >= year_nat ~ 1)) %>% 
+  mutate(national=replace_na(national, 0)) %>% 
+  select(-year_nat, -catch) %>% 
+  select(-stocklong, -is_high_seas_cutoff0, -is_high_seas_cutoff5, -is_high_seas_cutoff10, -is_high_seas_cutoff15, -is_high_seas_cutoff20, -is_high_seas_cutoff25, -hhi_cutoff0, -hhi_cutoff5, -hhi_cutoff10, -hhi_cutoff15, -hhi_cutoff20, -hhi_cutoff25)
+
+
+```
+
+```{r cleaning ramesh}
+
+larval_clean <- ramesh %>% 
+  pivot_longer(cols=source:sink,
+               names_to="type") %>% 
+  select(-portion, -type) %>% 
+  distinct() %>% 
+  rename(country=value) %>% 
+  group_by(scientificname) %>% 
+  add_count() %>% 
+  rename(n_larval=n) %>% 
+  select(-country) %>% 
+  distinct()
+
+```
+
+```{r fishbase aspect ratio}
+
+## Aspect Ratio by Genera, then matched to RAM Stocks ##
+
+all_species <- all_sp_prop_eezs %>% left_join(metadata, by=c("stockid")) %>% 
+  select(stockid, stocklong, scientificname, commonname, total_cells, ohi_rgn, n_cells, prop, rgn_nam)
+
+forfb <- all_species %>% 
+  distinct(scientificname) %>% drop_na()
+
+specieslist <- forfb[['scientificname']]
+
+all_species_genera <- all_sp_prop_eezs %>% left_join(metadata, by=c("stockid")) %>% 
+  select(stockid, stocklong, scientificname, commonname, total_cells, ohi_rgn, n_cells, prop, rgn_nam) %>% 
+  separate(scientificname, c("Genus", "Species")) %>% 
+  select(-Species)
+
+fbswim <- swimming(species_list = specieslist) %>% drop_na(AspectRatio) %>% 
+  select(Species, AspectRatio) %>% 
+  rename(scientificname=Species) %>% 
+  separate(scientificname, c("Genus", "Species")) %>% 
+  left_join(all_species_genera, by=c("Genus")) %>% 
+  drop_na(AspectRatio) %>% 
+  distinct(stockid,AspectRatio) %>% 
+  group_by(stockid) %>% 
+  mutate(mean_AR=mean(AspectRatio)) %>% 
+  select(-AspectRatio) %>% 
+  distinct() %>% 
+  rename(AspectRatio=mean_AR)
+
+```
+
+```{r maximized panel}
+
+#Removing Aspect Ratio, maximizing larval and distribution data.
+
+max_panel <- all_sp_prop_eezs %>% 
+  left_join(metadata, by=c("stockid")) %>% 
+  filter(rgn_typ=="eez") %>% 
+  group_by(stockid) %>% 
+  add_tally() %>% 
+  rename(n_eez=n) %>% 
+  ungroup() %>% 
+  left_join(larval_clean) %>% 
+  drop_na() %>% 
+  left_join(ram) %>% 
+  drop_na()
+  
+unique(max_panel$stockid) #274 stocks
+
+write_csv(max_panel, here("data","max_panel.csv"))
+
+```
+
+
+```{r intermediate panel}
+
+#Include everything except for Aspect Ratio
+all_sp_clean <- all_sp_prop_eezs %>%
+  filter(rgn_typ=="eez") %>% 
+  group_by(stockid) %>% 
+  add_tally() %>% 
+  rename(n_eez=n) %>% 
+  ungroup() %>% 
+  left_join(free, by=c("stockid")) %>% 
+  drop_na() %>%
+  select(-total_cells, -ohi_rgn, -n_cells, -rgn_typ, -p) %>% 
+  select(-prop, -prop_perc, -rgn_nam) %>% 
+  distinct()
+
+
+inter_db <- mgmt %>% 
+  left_join(metadata_edit) %>% 
+  left_join(all_sp_clean, by=c("stockid")) %>% 
+  left_join(larval_clean, by=c("scientificname")) %>% 
+  drop_na() %>% distinct() %>% 
+  mutate(shared_eez = ifelse(n_eez == 1, 0, 1)) %>% 
+  mutate(shared_larval = if_else(n_larval==1, 0, 1)) %>% 
+  select(stockid, scientificname, commonname, ram_region, primary_country, year, status_bio, status_f, shared_eez, n_eez, shared_larval, n_larval, num_eezs_cutoff0, num_eezs_cutoff5, num_eezs_cutoff10, num_eezs_cutoff15, num_eezs_cutoff20, num_eezs_cutoff25, r, B0, age_50_mat, max_length, national, multiple_cs_progs, IQ, ITQ, IVQ, Coop, CommunityQuota, TURF, RBP) %>% 
+  left_join(ex_vessel)
+
+write_csv(inter_db, here("data","intermediate_panel.csv"))
+
+
+```
+
+```{r full panel}
+
+all_sp_clean <- all_sp_prop_eezs %>%
+  filter(rgn_typ=="eez") %>% 
+  group_by(stockid) %>% 
+  add_tally() %>% 
+  rename(n_eez=n) %>% 
+  ungroup() %>% 
+  left_join(free, by=c("stockid")) %>% 
+  drop_na() %>% 
+  left_join(fbswim, by=c("stockid")) %>% 
+  drop_na() %>% 
+  select(-total_cells, -ohi_rgn, -n_cells, -rgn_typ, -p) %>% 
+  select(-prop, -prop_perc, -rgn_nam) %>% 
+  distinct()
+
+
+full_db <- mgmt %>% 
+  left_join(metadata_edit) %>% 
+  left_join(all_sp_clean, by=c("stockid")) %>% 
+  left_join(larval_clean, by=c("scientificname")) %>% 
+  drop_na() %>% distinct() %>% 
+  mutate(shared_eez = ifelse(n_eez == 1, 0, 1)) %>% 
+  mutate(shared_larval = if_else(n_larval==1, 0, 1)) %>% 
+  select(stockid, scientificname, commonname, ram_region, primary_country, year, status_bio, status_f, shared_eez, n_eez, shared_larval, n_larval, num_eezs_cutoff0, num_eezs_cutoff5, num_eezs_cutoff10, num_eezs_cutoff15, num_eezs_cutoff20, num_eezs_cutoff25, r, B0, AspectRatio, age_50_mat, max_length, national, multiple_cs_progs, IQ, ITQ, IVQ, Coop, CommunityQuota, TURF, RBP) %>% 
+  left_join(ex_vessel)
+
+write_csv(full_db, here("data","full_panel.csv")) 
+
+```
